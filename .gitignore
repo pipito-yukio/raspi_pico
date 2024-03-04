@@ -1,3 +1,4 @@
+build
 # Prerequisites
 *.d
 
@@ -22,14 +23,12 @@
 *.la
 *.lo
 
-# Shared objects (inc. Windows DLLs)
-*.dll
+# Shared objects
 *.so
 *.so.*
 *.dylib
 
 # Executables
-*.exe
 *.out
 *.app
 *.i*86
@@ -49,4 +48,14 @@
 modules.order
 Module.symvers
 Mkfile.old
-dkms.conf
+dkms.conf_deps
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
