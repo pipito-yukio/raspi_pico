@@ -1,0 +1,2 @@
+add_subdirectory(thermistor_temperature)
+add_subdirectory(spi_mcp3002_adc)
