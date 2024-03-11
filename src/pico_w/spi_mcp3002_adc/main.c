@@ -37,8 +37,6 @@ const uint8_t ADC_SAMPLES = 10;
 // Builtin ADC0
 const float ADC_VREF = 3.3;
 // MCP3002 section
-const uint8_t MCP3002_CMD_1 = 0b01101000;
-const uint8_t MCP3002_CMD_2 = 0x00;
 const uint8_t MCP_CH0 = 0;
 const float MCP_VREF = 3.3;
 // Thermister section
@@ -63,12 +61,13 @@ static inline void cs_deselect() {
 
 // Only MCP3002 ADC
 static uint16_t analogRead(int8_t ch) {
-   uint8_t cmd_first = MCP3002_CMD_1 | (ch << 4);
+   uint8_t cmd_1st = 0b01101000 | (ch << 4);
+   uint8_t cmd_2nd = 0x00;
    uint8_t highByte;
    uint8_t lowByte;
    cs_select();
-   spi_write_read_blocking(SPI_PORT, &cmd_first, &highByte, 1);
-   spi_write_read_blocking(SPI_PORT, &MCP3002_CMD_2, &lowByte, 1);
+   spi_write_read_blocking(SPI_PORT, &cmd_1st, &highByte, 1);
+   spi_write_read_blocking(SPI_PORT, &cmd_2nd, &lowByte, 1);
    cs_deselect();
    return ((highByte & 0x03) << 8) | lowByte;
 }
@@ -78,7 +77,7 @@ float getAdcVoltage() {
    for (int i = 0; i < ADC_SAMPLES; i++) {
       adcTotal += adc_read();
       sleep_ms(30);
-   }   
+   }
    uint16_t adcValue = round(1.0 * adcTotal / ADC_SAMPLES);
    printf("adc0.adcValue = %d\n", adcValue);
    return ADC_VREF * adcValue / (1 << 12);
@@ -126,18 +125,14 @@ int main() {
    gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
    gpio_set_function(PIN_SCK, GPIO_FUNC_SPI);
    gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
-   // Make the SPI pins available to picotool
-   bi_decl(bi_3pins_with_func(PIN_MISO, PIN_MOSI, PIN_SCK, GPIO_FUNC_SPI));
 
    // Chip select is active-low, so we'll initialise it to a driven-high state
    gpio_init(PIN_CS);
    gpio_set_dir(PIN_CS, GPIO_OUT);
    gpio_put(PIN_CS, 1);
-   // Make the CS pin available to picotool
-   bi_decl(bi_1pin_with_name(PIN_CS, "SPI CS"));
-   printf("MCP3002 ADC Initialize with SPI...\n");
+   printf("Complete Initialize.");
 
-   while (1) {
+   while (true) {
       // Measure Thermister1 with MCP3002
       float outVolt = getMcpAdcVoltage(MCP_CH0);
       float temper = getThermTemp(outVolt);
