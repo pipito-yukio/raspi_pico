@@ -1,0 +1,13 @@
+{
+   "files.associations": {
+      "stdio.h": "c",
+      "gpio.h": "c",
+      "stdlib.h": "c",
+      "adc.h": "c",
+      "string.h": "c",
+      "math.h": "c",
+      "cdefs.h": "c",
+      "spi.h": "c",
+      "binary_info.h": "c"
+   }
+}
